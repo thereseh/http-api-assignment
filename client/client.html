@@ -6,6 +6,96 @@
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
   <script type="text/babel">
+   //function to handle our xhr response
+    const handleResponse = (xhr) => {
+      //grab the content section
+      const content = document.querySelector("#content");
+      
+      const type = xhr.getResponseHeader('content-type');
+      if(type === 'application/json') {
+		//parse the response text into a JSON object
+        const obj = JSON.parse(xhr.response);
+        console.log(obj);
+      } //if response was in xml
+      else if (type === 'text/xml') {
+		//grab the name tag and age tag from our responseXML
+		//This will only work if the responding XML is completely valid.
+		//Otherwise the responseXML field will be null
+         const obj = xhr.responseXML;
+        console.log(obj);
+        //const id = xhr.responseXML.querySelector('id').textContent;
+        //const message = xhr.responseXML.querySelector('message').textContent;
+        //console.log(id);
+        //console.log(message);
+      }
+      
+      
+      //check the xhr status code and handle accordingly
+      switch(xhr.status) {
+        case 200: //success
+          content.innerHTML = `<b>Success</b><br><br>`;
+          content.innerHTML += `Message: This is a successful response.`;
+          break;
+        case 400: //bad request 
+          content.innerHTML = `<b>Bad Request</b><br><br>`;
+          content.innerHTML += `Message: Missing valid query paramter set to true.`;
+          break;
+        case 401: //unathorized
+          content.innerHTML = `<b>Unathorized</b><br><br>`;
+          content.innerHTML += `Message: Missing loggedIn query paramter set to yes.`;
+          break;
+        case 403: //forbidden
+          content.innerHTML = `<b>Forbidden</b><br><br>`;
+          content.innerHTML += `Message: You do not have access to this content.`;
+          break;
+        case 404: //not found (requested resource does not exist)
+          content.innerHTML = `<b>Resource Not Found</b><br><br>`;
+          content.innerHTML += `Message: The page you are looking for was not found.`;
+          break;
+        case 500: //inernal
+          content.innerHTML = `<b>Internal Server Error</b><br><br>`;
+          content.innerHTML += `Message: Internal Serve Error. Something went wrong.`;
+          break;
+        case 501: //not Implemented
+          content.innerHTML = `<b>Not Implemented</b><br><br>`;
+          content.innerHTML += `Message: A get request for this page has not been implemented yet. Check again later for updated content.`;
+          break;
+        default: //default other errors we are not handling in this example
+          content.innerHTML = `Error code not implemented by client.`;
+          break;
+      }
+    };
+    
+    //function to send ajax
+    const sendAjax = (url) => {
+      //create a new xhr (ajax) request. 
+      //Remember that these are ASYNCHRONOUS
+      const xhr = new XMLHttpRequest();
+      //set the xhr to a GET request to a certain URL
+      xhr.open('GET', url);
+      //Set the accept headers to the desired response mime type
+      //Server does NOT have to support this. It is a gentle request.
+      const type = document.querySelector("#type").value;
+      xhr.setRequestHeader ("Accept", type);
+
+      //When the xhr loads, call handleResponse and pass the xhr object
+      xhr.onload = () => handleResponse(xhr);
+
+      //send our ajax request to the server
+      xhr.send();
+    };
+
+    //initialization function
+    const init = () => {
+      const send = document.querySelector("#send");
+      
+      send.addEventListener('click', () => {
+      const page = document.querySelector("#page").value; 
+      sendAjax(page);
+    });
+    };
+
+    window.onload = init;
 
   </script>
 </head>
