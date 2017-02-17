@@ -19,6 +19,8 @@ const urlStruct = {
   notFound: jsonHandler.notFound,
 };
 
+// if we want XML, is probably not the most efficient way to separate them
+// was just a fast easy solution as I knew it would work and be more readable
 const urlStructXML = {
   '/': htmlHandler.getIndex,
   '/style.css': htmlHandler.getCSS,
@@ -35,12 +37,14 @@ const onRequest = (request, response) => {
   const parsedUrl = url.parse(request.url);
   const params = query.parse(parsedUrl.query);
   const acceptedTypes = request.headers.accept.split(',');
+  // if the head type is text/xml
   if (acceptedTypes[0] === 'text/xml') {
     if (urlStructXML[parsedUrl.pathname]) {
       urlStructXML[parsedUrl.pathname](request, response, params);
     } else {
       urlStructXML.notFound(request, response, params);
     }
+    // else if JSON
   } else if (urlStruct[parsedUrl.pathname]) {
     urlStruct[parsedUrl.pathname](request, response, params);
   } else {

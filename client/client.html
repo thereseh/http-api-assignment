@@ -9,26 +9,21 @@
    //function to handle our xhr response
     const handleResponse = (xhr) => {
       //grab the content section
-      const content = document.querySelector("#content");
       
+      const content = document.querySelector("#content");
+      // check what type of header
       const type = xhr.getResponseHeader('content-type');
+      // if JSON
       if(type === 'application/json') {
 		//parse the response text into a JSON object
-        const obj = JSON.parse(xhr.response);
-        console.log(obj);
+        //const obj = JSON.parse(xhr.response);
+        console.log(JSON.parse(xhr.response));
       } //if response was in xml
       else if (type === 'text/xml') {
-		//grab the name tag and age tag from our responseXML
-		//This will only work if the responding XML is completely valid.
-		//Otherwise the responseXML field will be null
-         const obj = xhr.responseXML;
-        console.log(obj);
-        //const id = xhr.responseXML.querySelector('id').textContent;
-        //const message = xhr.responseXML.querySelector('message').textContent;
-        //console.log(id);
-        //console.log(message);
+		// get the XML object
+        //const obj = xhr.responseXML;
+        console.log(xhr.responseXML);
       }
-      
       
       //check the xhr status code and handle accordingly
       switch(xhr.status) {
@@ -66,15 +61,14 @@
       }
     };
     
-    //function to send ajax
+    //function to send ajax, method taken from your example
     const sendAjax = (url) => {
       //create a new xhr (ajax) request. 
       //Remember that these are ASYNCHRONOUS
       const xhr = new XMLHttpRequest();
       //set the xhr to a GET request to a certain URL
       xhr.open('GET', url);
-      //Set the accept headers to the desired response mime type
-      //Server does NOT have to support this. It is a gentle request.
+      // checks what type of header that chosen, and the the header type to that
       const type = document.querySelector("#type").value;
       xhr.setRequestHeader ("Accept", type);
 
